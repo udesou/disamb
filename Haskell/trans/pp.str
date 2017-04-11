@@ -1,0 +1,52 @@
+module pp
+
+imports
+
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/editor/refactoring/-
+  pp/Haskell-front-parenthesize
+  pp/Haskell-front-pp
+
+rules
+
+  editor-format:
+    (node, _, ast, path, project-path) -> (filename, result)
+    with
+      ext      := <get-extension> path
+    ; filename := <guarantee-extension(|$[pp.[ext]])> path
+    ; result   := <pp-debug> node
+
+rules
+  
+  pp-Haskell-front-string =
+    parenthesize-Haskell-front
+    ; prettyprint-Haskell-front-start-symbols
+    ; !V([], <id>)
+    ; box2text-string(|120)
+      
+  pp-partial-Haskell-front-string =
+    parenthesize-Haskell-front
+    ; prettyprint-Haskell-front
+    ; !V([], <id>)
+    ; box2text-string(|120)
+    
+  pp-partial-Haskell-front-string(|sort) =
+    parenthesize-Haskell-front
+    ; prettyprint-Haskell-front(|sort)
+    ; !V([], <id>)
+    ; box2text-string(|120)  
+  
+  prettyprint-Haskell-front-QModid = prettyprint-Haskell-front-Modid
+  prettyprint-Haskell-front-Modid = fail
+      
+  pp-debug :
+    ast -> result
+    with
+       result := <pp-Haskell-front-string> ast
+    <+ <bottomup(try(not(is-string); not(is-list); not(pp-Haskell-front-string); debug(!"cannot pp ")))> ast
+    ;  result := ""
+
+rules
+  
+  construct-textual-change = construct-textual-change(pp-partial-Haskell-front-string, parenthesize, override-reconstruction, resugar)

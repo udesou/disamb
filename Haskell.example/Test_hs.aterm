@@ -1,0 +1,374 @@
+Module(
+  ModuleDec("ATerm", None())
+, Body(
+    ImportdeclSeq(
+      Import(None(), None(), QModId("Control", "Applicative"), None(), None())
+    , ImportdeclSeq(
+        Import(
+          None()
+        , None()
+        , QModId("Data", QModId("Attoparsec", "Text"))
+        , None()
+        , Some(Hiding(Exportlist(["string", "number"])))
+        )
+      , ImportdeclSeq(
+          Import(
+            None()
+          , None()
+          , QModId("Data", "Text")
+          , None()
+          , Some(Impspec(Exportlist(["Text"])))
+          )
+        , ImportdeclSeq(
+            Import(
+              None()
+            , Some(Qualified())
+            , QModId("Data", "Text")
+            , Some(As("T"))
+            , None()
+            )
+          , Import(
+              None()
+            , Some(Qualified())
+            , QModId("Data", "List")
+            , Some(As("L"))
+            , None()
+            )
+          )
+        )
+      )
+    )
+  , TopdeclSeq(
+      Data(
+        None()
+      , TCon("ATerm")
+      , ConstrDecls(
+          [ ConstrDecl("ATerm", [TCon("Text"), TList(TCon("ATerm"))])
+          , ConstrDecl("List", [TList(TCon("ATerm"))])
+          , ConstrDecl("String", [TCon("Text")])
+          , ConstrDecl("Number", [TCon("Int")])
+          ]
+        )
+      , NoDeriving()
+      )
+    , TopdeclSeq(
+        Instance(
+          None()
+        , "Show"
+        , [InstCons("ATerm")]
+        , Where(
+            DeclList(
+              Valdef(
+                VarFunLHS(Var("show"), [Var("t")])
+              , Case(
+                  Var("t")
+                , AltList(
+                    AltSeq(
+                      GdAlt(
+                        ConstrApp("ATerm", [Var("c"), Var("ts")])
+                      , [ GdPat(
+                            AppBin(Var("not"), AppBin(Var("null"), Var("ts")))
+                          , OpApp(
+                              AppBin(Var(QVarId("T", "unpack")), Var("c"))
+                            , "++"
+                            , OpApp(
+                                Lit(String(["("]))
+                              , "++"
+                              , OpApp(
+                                  AppBin(
+                                    AppBin(
+                                      Var(QVarId("L", "intercalate"))
+                                    , Lit(String([","]))
+                                    )
+                                  , OpApp(Var("show"), "<$>", Var("ts"))
+                                  )
+                                , "++"
+                                , Lit(String([")"]))
+                                )
+                              )
+                            )
+                          )
+                        , GdPat(
+                            Var("otherwise")
+                          , AppBin(Var(QVarId("T", "unpack")), Var("c"))
+                          )
+                        ]
+                      , Where(DeclList(Empty()))
+                      )
+                    , AltSeq(
+                        Alt(
+                          ConstrApp("List", [Var("ts")])
+                        , AppBin(Var("show"), Var("ts"))
+                        , Where(DeclList(Empty()))
+                        )
+                      , AltSeq(
+                          Alt(
+                            ConstrApp("String", [Var("s")])
+                          , AppBin(Var("show"), Var("s"))
+                          , Where(DeclList(Empty()))
+                          )
+                        , Alt(
+                            ConstrApp("Number", [Var("i")])
+                          , AppBin(Var("show"), Var("i"))
+                          , Where(DeclList(Empty()))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              , Where(DeclList(Empty()))
+              )
+            )
+          )
+        )
+      , TopdeclSeq(
+          SignDecl(
+            Ins("parseATerm")
+          , None()
+          , TFunBin(
+              TCon("Text")
+            , TAppBin(TAppBin(TCon("Either"), TCon("String")), TCon("ATerm"))
+            )
+          )
+        , TopdeclSeq(
+            Valdef(
+              VarFunLHS(Var("parseATerm"), [Var("t")])
+            , Case(
+                AppBin(AppBin(Var("parse"), Var("aterm")), Var("t"))
+              , AltList(
+                  AltSeq(
+                    Alt(
+                      ConstrApp("Done", [Wildcard(), Var("r")])
+                    , AppBin(Constr("Right"), Var("r"))
+                    , Where(DeclList(Empty()))
+                    )
+                  , AltSeq(
+                      Alt(
+                        ConstrApp("Fail", [Wildcard(), Wildcard(), Var("err")])
+                      , AppBin(Constr("Left"), Var("err"))
+                      , Where(DeclList(Empty()))
+                      )
+                    , Alt(
+                        Labeled("Partial", LabeledPats([]))
+                      , AppBin(
+                          Constr("Left")
+                        , Lit(
+                            String(
+                              ["P", "a", "r", "t", "i", "a", "l"]
+                            )
+                          )
+                        )
+                      , Where(DeclList(Empty()))
+                      )
+                    )
+                  )
+                )
+              )
+            , Where(DeclList(Empty()))
+            )
+          , TopdeclSeq(
+              SignDecl(
+                Ins("aterm")
+              , None()
+              , TAppBin(TCon("Parser"), TCon("ATerm"))
+              )
+            , TopdeclSeq(
+                Valdef(
+                  Var("aterm")
+                , OpApp(
+                    Var("constructor")
+                  , "<|>"
+                  , OpApp(
+                      Var("constant")
+                    , "<|>"
+                    , OpApp(
+                        Var("list")
+                      , "<|>"
+                      , OpApp(Var("string"), "<|>", Var("number"))
+                      )
+                    )
+                  )
+                , Where(DeclList(Empty()))
+                )
+              , TopdeclSeq(
+                  SignDecl(
+                    Ins("constructor")
+                  , None()
+                  , TAppBin(TCon("Parser"), TCon("ATerm"))
+                  )
+                , TopdeclSeq(
+                    Valdef(
+                      Var("constructor")
+                    , Do(
+                        StmtList(
+                          StmtSeq(
+                            BindStmt(Var("con"), AppBin(Var("many1"), Var("letter")))
+                          , StmtSeq(
+                              BindStmt(Wildcard(), AppBin(Var("char"), Lit(Char("("))))
+                            , StmtSeq(
+                                BindStmt(
+                                  Var("ts")
+                                , OpApp(
+                                    Var("aterm")
+                                  , PrefOp("sepBy")
+                                  , AppBin(Var("char"), Lit(Char(",")))
+                                  )
+                                )
+                              , StmtSeq(
+                                  BindStmt(Wildcard(), AppBin(Var("char"), Lit(Char(")"))))
+                                , ExpStmt(
+                                    OpApp(
+                                      Var("return")
+                                    , "$"
+                                    , AppBin(
+                                        AppBin(
+                                          Constr("ATerm")
+                                        , AppBin(Var(QVarId("T", "pack")), Var("con"))
+                                        )
+                                      , Var("ts")
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    , Where(DeclList(Empty()))
+                    )
+                  , TopdeclSeq(
+                      SignDecl(
+                        Ins("constant")
+                      , None()
+                      , TAppBin(TCon("Parser"), TCon("ATerm"))
+                      )
+                    , TopdeclSeq(
+                        Valdef(
+                          Var("constant")
+                        , Do(
+                            StmtList(
+                              StmtSeq(
+                                BindStmt(Var("con"), AppBin(Var("many1"), Var("letter")))
+                              , ExpStmt(
+                                  OpApp(
+                                    Var("return")
+                                  , "$"
+                                  , AppBin(
+                                      AppBin(
+                                        Constr("ATerm")
+                                      , AppBin(Var(QVarId("T", "pack")), Var("con"))
+                                      )
+                                    , Constr(EmptyList())
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        , Where(DeclList(Empty()))
+                        )
+                      , TopdeclSeq(
+                          SignDecl(
+                            Ins("list")
+                          , None()
+                          , TAppBin(TCon("Parser"), TCon("ATerm"))
+                          )
+                        , TopdeclSeq(
+                            Valdef(
+                              Var("list")
+                            , Do(
+                                StmtList(
+                                  StmtSeq(
+                                    BindStmt(Wildcard(), AppBin(Var("char"), Lit(Char("["))))
+                                  , StmtSeq(
+                                      BindStmt(
+                                        Var("ts")
+                                      , OpApp(
+                                          Var("aterm")
+                                        , PrefOp("sepBy")
+                                        , AppBin(Var("char"), Lit(Char(",")))
+                                        )
+                                      )
+                                    , StmtSeq(
+                                        BindStmt(Wildcard(), AppBin(Var("char"), Lit(Char("]"))))
+                                      , ExpStmt(
+                                          OpApp(
+                                            Var("return")
+                                          , "$"
+                                          , AppBin(Constr("List"), Var("ts"))
+                                          )
+                                        )
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            , Where(DeclList(Empty()))
+                            )
+                          , TopdeclSeq(
+                              SignDecl(
+                                Ins("string")
+                              , None()
+                              , TAppBin(TCon("Parser"), TCon("ATerm"))
+                              )
+                            , TopdeclSeq(
+                                Valdef(
+                                  Var("string")
+                                , Do(
+                                    StmtList(
+                                      StmtSeq(
+                                        BindStmt(Wildcard(), AppBin(Var("char"), Lit(Char("\""))))
+                                      , StmtSeq(
+                                          BindStmt(
+                                            Var("s")
+                                          , AppBin(
+                                              AppBin(Var("manyTill"), Var("anyChar"))
+                                            , AppBin(Var("char"), Lit(Char("\"")))
+                                            )
+                                          )
+                                        , ExpStmt(
+                                            OpApp(
+                                              Var("return")
+                                            , "$"
+                                            , AppBin(
+                                                Constr("String")
+                                              , AppBin(Var(QVarId("T", "pack")), Var("s"))
+                                              )
+                                            )
+                                          )
+                                        )
+                                      )
+                                    )
+                                  )
+                                , Where(DeclList(Empty()))
+                                )
+                              , TopdeclSeq(
+                                  SignDecl(
+                                    Ins("number")
+                                  , None()
+                                  , TAppBin(TCon("Parser"), TCon("ATerm"))
+                                  )
+                                , Valdef(
+                                    Var("number")
+                                  , OpApp(Constr("Number"), "<$>", Var("decimal"))
+                                  , Where(DeclList(Empty()))
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)

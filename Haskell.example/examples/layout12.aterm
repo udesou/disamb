@@ -1,0 +1,18 @@
+Program(
+  Body(
+    Empty()
+  , Valdef(
+      VarFunLHS(Var("f"), [Var("x")])
+    , OpApp(
+        Do(StmtList(ExpStmt(Var("x"))))
+      , "+"
+      , OpApp(
+          Lit(Int("1"))
+        , "+"
+        , If(Var("x"), Var("x"), Var("x"))
+        )
+      )
+    , Where(DeclList(Empty()))
+    )
+  )
+)

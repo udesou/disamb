@@ -1,0 +1,8 @@
+---
+id: org.metaborg:Haskell.example:0.1.0-SNAPSHOT
+name: Haskell-front
+dependencies:
+  compile:
+  - org.metaborg:Haskell:0.1.0-SNAPSHOT
+build:
+  useBuildSystemSpec: true

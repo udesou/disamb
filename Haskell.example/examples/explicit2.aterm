@@ -1,0 +1,26 @@
+Program(
+  Body(
+    Empty()
+  , Valdef(
+      VarFunLHS(Var("id"), [Var("x")])
+    , OpApp(
+        Var("x")
+      , "+"
+      , OpApp(
+          Lit(Int("2"))
+        , "+"
+        , If(
+            Lit(Int("1"))
+          , OpApp(Lit(Int("2")), "+", Lit(Int("3")))
+          , OpApp(
+              Var("x")
+            , "+"
+            , OpApp(Lit(Int("2")), "+", Lit(Int("43")))
+            )
+          )
+        )
+      )
+    , Where(DeclList(Empty()))
+    )
+  )
+)

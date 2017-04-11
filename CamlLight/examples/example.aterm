@@ -1,0 +1,11 @@
+CLImpl(
+  [ CLImplSemis(
+      CLExpr(
+        CLApp(
+          CLVariable(CLVarName(CLLowercaseIdent("y")))
+        , CLVariable(CLVarName(CLLowercaseIdent("y")))
+        )
+      )
+    )
+  ]
+)

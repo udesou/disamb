@@ -1,0 +1,20 @@
+Program(
+  Body(
+    Empty()
+  , Valdef(
+      Var("a")
+    , Do(
+        StmtList(
+          ExpStmt(
+            OpApp(
+              AppBin(Var("return"), Lit(Int("5")))
+            , "+"
+            , Lit(Int("7"))
+            )
+          )
+        )
+      )
+    , Where(DeclList(Empty()))
+    )
+  )
+)

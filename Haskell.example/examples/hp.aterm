@@ -1,0 +1,64 @@
+Module(
+  ModuleDec("Hp", None())
+, Body(
+    ImportdeclSeq(
+      Import(
+        None()
+      , None()
+      , "Parsec"
+      , None()
+      , Some(Hiding(Exportlist(["Parser"])))
+      )
+    , ImportdeclSeq(
+        Import(
+          None()
+        , Some(Qualified())
+        , "ParsecToken"
+        , Some(As("P"))
+        , None()
+        )
+      , Import(
+          None()
+        , None()
+        , "ParsecLanguage"
+        , None()
+        , Some(Impspec(Exportlist(["haskellDef"])))
+        )
+      )
+    )
+  , Valdef(
+      Var("pmodule")
+    , OpApp(
+        Do(
+          StmtList(
+            StmtSeq(
+              ExpStmt(
+                AppBin(
+                  Var("reserved")
+                , Lit(
+                    String(["m", "o", "d", "u", "l", "e"])
+                  )
+                )
+              )
+            , StmtSeq(
+                ExpStmt(Var("identifier"))
+              , StmtSeq(
+                  ExpStmt(
+                    AppBin(
+                      Var("reserved")
+                    , Lit(String(["w", "h", "e", "r", "e"]))
+                    )
+                  )
+                , ExpStmt(Var("decls"))
+                )
+              )
+            )
+          )
+        )
+      , "<|>"
+      , Var("decls")
+      )
+    , Where(DeclList(Empty()))
+    )
+  )
+)

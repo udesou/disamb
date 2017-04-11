@@ -1,0 +1,16 @@
+module deep 
+
+language CamlLight  
+start symbol Start
+
+test ifAdd [[ 1 + if 2 then 3 + 4 ;;]] analysis succeeds 0 warnings
+
+test dangling else [[ if 1 then if 2 then 3 else if 4 then 5 else 6 ;;]] analysis succeeds 0 warnings
+
+test deep1 [[ let x = 1 + if 2 then if 3 then 4 else if 5 then 6 + 5 else 2 + 2  ;; ]] analysis succeeds 0 warnings
+
+test deep2 [[ let x = 1 + if 2 then if 3 then 4 else if 5 then 6 + 5 else 2 + 2  ;; ]] analysis succeeds 0 warnings
+
+test deep3 [[ let x = 1 + 1 * if 2 then if 3 then 4 else if 5 then 6 + 5 else 2 * 2 + 2  ;;]] analysis succeeds 0 warnings
+
+test ifAdd [[ 1 + if 2 then 3 + 4 - 5 ;;]] analysis succeeds 0 warnings
